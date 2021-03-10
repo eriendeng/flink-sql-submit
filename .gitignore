@@ -1,0 +1,6 @@
+sql-submit.iml
+.idea
+target/
+src/main/resources/app.properties
+src/main/resources/sql/*.sql
+!src/main/resources/sql/demo.sql

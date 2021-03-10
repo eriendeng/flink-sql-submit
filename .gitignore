@@ -4,3 +4,4 @@ target/
 src/main/resources/app.properties
 src/main/resources/sql/*.sql
 !src/main/resources/sql/demo.sql
+dependency-reduced-pom.xml

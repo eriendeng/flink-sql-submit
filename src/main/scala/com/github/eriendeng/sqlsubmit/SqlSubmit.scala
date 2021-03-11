@@ -1,5 +1,6 @@
 package com.github.eriendeng.sqlsubmit
 
+import org.apache.flink.runtime.state.filesystem.FsStateBackend
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.apache.flink.table.api.bridge.scala.StreamTableEnvironment
 import org.apache.flink.table.api.{EnvironmentSettings, SqlParserException, TableEnvironment}
@@ -10,19 +11,23 @@ import scala.collection.JavaConversions._
 object SqlSubmit {
 
   def main(args: Array[String]) {
-
     if (args.length == 0) {
       sys.error("PLEASE INPUT SQL FILE NAME.")
       System.exit(-1)
     }
     val sqlFileName = args(0)
     val sqls = Configuration.getSQL(sqlFileName)
-
     val sqlCalls = SqlCommandParser.parse(sqls)
 
+    val props = Configuration.loadProps()
+
     val bsEnv = StreamExecutionEnvironment.getExecutionEnvironment
+    bsEnv.setStateBackend(new FsStateBackend(props.getProperty("checkpoint.url")));
+    bsEnv.enableCheckpointing(3000L)
+    bsEnv.setParallelism(2)
     val bsSettings = EnvironmentSettings.newInstance().useBlinkPlanner().inStreamingMode().build()
     val tableEnv = StreamTableEnvironment.create(bsEnv, bsSettings)
+    UdfRegister.register(tableEnv)
 
     for (call <- sqlCalls) {
       println("[SQL] " + call.toString)
@@ -38,8 +43,6 @@ object SqlSubmit {
           throw new RuntimeException("Unsupported command: " + call.command)
       }
     }
-    bsEnv.execute("SQL Job")
-    tableEnv.execute("SQL Job")
   }
 
   private def callSet(tEnv: TableEnvironment, cmdCall: SqlCommandParser.SqlCommandCall): Unit = {

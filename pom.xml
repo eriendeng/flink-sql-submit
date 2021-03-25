@@ -114,6 +114,11 @@ under the License.
 			<artifactId>UserAgentUtils</artifactId>
 			<version>1.21</version>
 		</dependency>
+		<dependency>
+			<groupId>com.qcloud</groupId>
+			<artifactId>cos_api</artifactId>
+			<version>5.6.37</version>
+		</dependency>
 
 		<!-- Add connector dependencies here. They must be in the default scope (compile). -->
 
@@ -154,7 +159,6 @@ under the License.
 				<directory>src/main/resources</directory>
 				<includes>
 					<include>*.properties</include>
-					<include>sql/*.sql</include>
 				</includes>
 			</resource>
 		</resources>

@@ -12,8 +12,4 @@ object Configuration {
     props
   }
 
-  def getSQL(fileName: String): List[String] = {
-    val sqlSourceStream = getClass.getResourceAsStream("/sql/" + fileName + ".sql")
-    Source.fromInputStream(sqlSourceStream).getLines().toList
-  }
 }

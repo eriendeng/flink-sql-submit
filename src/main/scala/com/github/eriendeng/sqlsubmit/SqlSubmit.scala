@@ -15,11 +15,17 @@ object SqlSubmit {
       sys.error("PLEASE INPUT SQL FILE NAME.")
       System.exit(-1)
     }
-    val sqlFileName = args(0)
-    val sqls = Configuration.getSQL(sqlFileName)
-    val sqlCalls = SqlCommandParser.parse(sqls)
-
     val props = Configuration.loadProps()
+
+    val sqlFileName = args(0)
+    val cosClient = new CosClient(
+      props.getProperty("cos.region"),
+      props.getProperty("cos.bucket"),
+      props.getProperty("cos.id"),
+      props.getProperty("cos.key")
+    )
+    val sqls = cosClient.GetSql(sqlFileName)
+    val sqlCalls = SqlCommandParser.parse(sqls)
 
     val bsEnv = StreamExecutionEnvironment.getExecutionEnvironment
     bsEnv.setStateBackend(new FsStateBackend(props.getProperty("checkpoint.url")));
